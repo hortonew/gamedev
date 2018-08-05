@@ -37,19 +37,13 @@ score_label = pyglet.text.Label(
     batch=main_batch)
 
 
-# Load enemy sprite sheet
-enemy_ship = pyglet.image.load("resources/sh-enemy.png")
-enemy_ship_seq = pyglet.image.ImageGrid(enemy_ship, 1, 15, item_width=100, item_height=100)
-enemy_ship_texture = pyglet.image.TextureGrid(enemy_ship_seq)
-enemy_ship_anim = pyglet.image.Animation.from_image_sequence(enemy_ship_texture[0:], .05, loop=True)
-enemy_sprite = pyglet.sprite.Sprite(enemy_ship_anim, x=400, y=400, batch=main_batch)
-
-# Load explosion sprite sheet
-explosion = pyglet.image.load("resources/sh-explosion.png")
-explosion_seq = pyglet.image.ImageGrid(explosion, 4, 5, item_width=96, item_height=96)
-explosion_texture = pyglet.image.TextureGrid(explosion_seq)
-explosion_anim = pyglet.image.Animation.from_image_sequence(explosion_texture[0:], .05, loop=True)
-explosion_sprite = pyglet.sprite.Sprite(explosion_anim, x=700, y=400, batch=main_batch)
+def import_spritesheet(spritesheet, rows, cols, item_width, item_height, x, y, batch, anim_slice=slice(0, None, 1), anim_speed=.1, should_loop=True):
+    """Produce sprite sheet animation."""
+    sprite_sheet = pyglet.image.load("resources/{}".format(spritesheet))
+    sprite_sheet_seq = pyglet.image.ImageGrid(sprite_sheet, rows, cols, item_width=item_width, item_height=item_height)
+    sprite_sheet_texture = pyglet.image.TextureGrid(sprite_sheet_seq)
+    sprite_sheet_anim = pyglet.image.Animation.from_image_sequence(sprite_sheet_texture[anim_slice], anim_speed, loop=should_loop)
+    pyglet.sprite.Sprite(sprite_sheet_anim, x=x, y=y, batch=batch)
 
 
 @screen.event
@@ -86,5 +80,8 @@ def update(dt):
     pass
 
 if __name__ == "__main__":
+    import_spritesheet("sh-enemy.png", 1, 15, 100, 100, 400, 400, main_batch, slice(0, None, 1), .05, True)
+    import_spritesheet("sh-explosion.png", 4, 5, 96, 96, 700, 400, main_batch, slice(0, None, 1), .1, True)
+    import_spritesheet("sh-explosion.png", 4, 5, 96, 96, 100, 100, main_batch, slice(0, None, 1), .1, True)
     pyglet.clock.schedule_interval(update, 1 / 120.0)
     pyglet.app.run()
